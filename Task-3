@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Interactive Site</title>
+  <style>
+    :root {
+      --primary-bg: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-color: #333;
+      --btn-bg: #4facfe;
+      --btn-hover: #00f2fe;
+      --correct: #4CAF50;
+      --wrong: #F44336;
+    }
+    body.dark {
+      --primary-bg: linear-gradient(135deg, #141e30, #243b55);
+      --card-bg: rgba(30, 30, 30, 0.95);
+      --text-color: #eee;
+      --btn-bg: #ff416c;
+      --btn-hover: #ff4b2b;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--primary-bg);
+      color: var(--text-color);
+      transition: all 0.5s ease;
+    }
+    header {
+      background: var(--card-bg);
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { margin: 0; }
+    #toggleTheme {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 30px;
+      background: var(--btn-bg);
+      color: white;
+      cursor: pointer;
+    }
+    section {
+      background: var(--card-bg);
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 800px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .carousel-container {
+      position: relative;
+      height: 400px;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+    .carousel img.active {
+      opacity: 1;
+      z-index: 1;
+    }
+    .btn, .option-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      background: var(--btn-bg);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      margin: 3px;
+    }
+    .btn:hover, .option-btn:hover {
+      background: var(--btn-hover);
+    }
+    .option-btn.correct {
+      background: var(--correct);
+    }
+    .option-btn.wrong {
+      background: var(--wrong);
+    }
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .progress {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌟 Full Advanced Project 🌟</h1>
+    <button id="toggleTheme">Toggle Dark Mode</button>
+  </header>
+
+  <!-- Carousel Section -->
+  <section>
+    <h2>Image Carousel</h2>
+    <div class="carousel-container">
+      <div class="carousel">
+        <img src="taj.jpg" class="active">
+        <img src="collosseum.jpg">
+        <img src="china.jpg">
+        
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:15px;">
+      <button class="btn" onclick="prevImage()">Prev</button>
+      <button class="btn" onclick="nextImage()">Next</button>
+    </div>
+  </section>
+
+  <!-- Advanced Quiz Section -->
+  <section class="quiz-container">
+    <div class="progress" id="progressText"></div>
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <button id="nextBtn" class="btn" style="display:none;">Next</button>
+  </section>
+
+  <!-- API Fetch Section -->
+  <section>
+    <h2>Fetch a Random Joke</h2>
+    <button class="btn" onclick="getJoke()">Get Joke</button>
+    <p id="joke"></p>
+  </section>
+
+  <script>
+    // Dark Mode Toggle
+    document.getElementById("toggleTheme").onclick = () => {
+      document.body.classList.toggle("dark");
+    };
+
+    // Carousel Logic
+    const images = document.querySelectorAll('.carousel img');
+    let current = 0;
+    function showImage() {
+      images.forEach((img, index) => {
+        img.classList.toggle('active', index === current);
+      });
+    }
+    function nextImage() {
+      current = (current + 1) % images.length;
+      showImage();
+    }
+    function prevImage() {
+      current = (current - 1 + images.length) % images.length;
+      showImage();
+    }
+    setInterval(nextImage, 5000);
+    showImage();
+
+    // Quiz Logic
+    const quizData = [
+      { question: "What is 5 + 7?", options: ["10", "12", "15"], answer: "12" },
+      { question: "Which language powers web pages?", options: ["JavaScript", "C++", "Go"], answer: "JavaScript" },
+      { question: "What does CSS stand for?", options: ["Colorful Style Sheets", "Cascading Style Sheets", "Creative Style System"], answer: "Cascading Style Sheets" }
+    ];
+    let quizIndex = 0, score = 0;
+
+    function loadQuiz() {
+      const data = quizData[quizIndex];
+      document.getElementById('question').innerText = data.question;
+      document.getElementById('progressText').innerText = `Question ${quizIndex + 1} of ${quizData.length}`;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      data.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.innerText = opt;
+        btn.className = 'option-btn';
+        btn.onclick = () => checkAnswer(btn, data.answer);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(button, correctAnswer) {
+      const allButtons = document.querySelectorAll('.option-btn');
+      allButtons.forEach(btn => btn.disabled = true);
+      if (button.innerText === correctAnswer) {
+        button.classList.add('correct');
+        score++;
+      } else {
+        button.classList.add('wrong');
+        allButtons.forEach(btn => {
+          if (btn.innerText === correctAnswer) btn.classList.add('correct');
+        });
+      }
+      document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    document.getElementById('nextBtn').onclick = () => {
+      quizIndex++;
+      if (quizIndex < quizData.length) {
+        document.getElementById('nextBtn').style.display = 'none';
+        loadQuiz();
+      } else {
+        document.querySelector('.quiz-container').innerHTML = `<h2>You scored ${score} out of ${quizData.length} 🎉</h2>`;
+      }
+    }
+
+    loadQuiz();
+
+    // Fetch API Logic
+    async function getJoke() {
+      document.getElementById('joke').innerText = 'Loading...';
+      try {
+        const res = await fetch("https://official-joke-api.appspot.com/random_joke");
+        const data = await res.json();
+        document.getElementById('joke').innerText = `${data.setup} - ${data.punchline}`;
+      } catch (e) {
+        document.getElementById('joke').innerText = 'Failed to fetch joke.';
+      }
+    }
+  </script>
+
+</body>
+</html>
