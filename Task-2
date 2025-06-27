@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Intermediate HTML, CSS, and JavaScript</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px; /* Space below navbar */
+    }
+
+    nav ul {
+      display: flex;
+      gap: 15px;
+      list-style: none;
+    }
+
+    nav ul li {
+      cursor: pointer;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Added background colors */
+    .contact-box {
+      background-color: #ffe5b4; /* Light orange background for contact */
+    }
+
+    .todo-box {
+      background-color: #d0f0c0; /* Light green background for to-do list */
+    }
+
+    /* Contact Form Styles */
+    form input, form textarea, form button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    form button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+    }
+
+    form button:hover {
+      background-color: #218838;
+    }
+
+    #error {
+      color: red;
+    }
+
+    /* To-Do List */
+    .todo-container input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .todo-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .todo-container ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .todo-container li {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      background: #eee;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    /* Flexbox section inside grid */
+    .flex-section-inside {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 10px;
+    }
+
+    .flex-box {
+      flex: 1 1 150px;
+      padding: 20px;
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .box-red { background-color: #e74c3c; }
+    .box-green { background-color: #2ecc71; }
+    .box-blue { background-color: #3498db; }
+    .box-purple { background-color: #9b59b6; }
+
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">My Webpage</div>
+    <nav>
+      <ul>
+        <li>Home</li>
+        <li>Contact</li>
+        <li>To Do List</li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Contact Form -->
+    <div class="box contact-box">
+      <h2>Contact Form</h2>
+      <form id="contactForm">
+        <input type="text" id="name" placeholder="Your Name" required />
+        <input type="email" id="email" placeholder="Your Email" required />
+        <textarea id="message" placeholder="Your Message" required></textarea>
+        <button type="submit">Submit</button>
+        <p id="error"></p>
+      </form>
+    </div>
+
+    <!-- To-Do List -->
+    <div class="box todo-box todo-container">
+      <h2>To-Do List</h2>
+      <input type="text" id="taskInput" placeholder="Enter a task" />
+      <button id="addBtn">Add Task</button>
+      <ul id="taskList"></ul>
+    </div>
+
+    <!-- Flexbox inside the grid -->
+    <div class="box">
+      <h2>Flexbox Section</h2>
+      <div class="flex-section-inside">
+        <div class="flex-box box-red">Box 1</div>
+        <div class="flex-box box-green">Box 2</div>
+        <div class="flex-box box-blue">Box 3</div>
+        <div class="flex-box box-purple">Box 4</div>
+      </div>
+    </div>
+
+    
+  </main>
+
+  <script>
+    // ✅ Form Validation
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name');
+      const email = document.getElementById('email');
+      const message = document.getElementById('message');
+      const error = document.getElementById('error');
+
+      if (!name.value || !email.value || !message.value) {
+        error.textContent = "All fields are required!";
+        return;
+      }
+
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      if (!email.value.match(emailPattern)) {
+        error.textContent = "Invalid email format.";
+        return;
+      }
+
+      error.textContent = "";
+      alert("Form submitted successfully!");
+      this.reset();
+    });
+
+    // ✅ To-Do List Logic
+    document.getElementById('addBtn').addEventListener('click', function () {
+      const input = document.getElementById('taskInput');
+      const taskText = input.value.trim();
+      if (taskText === "") return;
+
+      const li = document.createElement('li');
+      li.textContent = taskText;
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'X';
+      delBtn.style.marginLeft = '10px';
+      delBtn.onclick = () => li.remove();
+
+      li.appendChild(delBtn);
+      document.getElementById('taskList').appendChild(li);
+      input.value = '';
+    });
+  </script>
+</body>
+</html>
